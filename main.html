@@ -99,75 +99,491 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="26198b82" class="cell" data-execution_count="1">
+<div id="b7b37014" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_geojson(path):</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Docstring for load_geojson</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(path, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> f:</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> json.load(f)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> data</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_to_geodataframe(data):</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    Docstring for convert_to_geodataframe</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gpd.GeoDataFrame.from_features(data[<span class="st">"features"</span>])</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> point_in_polygon(point, polygon):</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">    Docstring for point_in_polygon</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> polygon.contains(point)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_gdfs(gdfs, columns):</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">    Plot multiple GeoDataFrames on the same plot, optionally coloring by a specified column.</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gdf, column <span class="kw">in</span> <span class="bu">zip</span>(gdfs, columns):</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        gdf.plot(ax<span class="op">=</span>ax, column<span class="op">=</span>column, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> map_polygons_to_points(districts_gdf, points_gdf):</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">    Map each neighbourhood to its corresponding district based on spatial containment.</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _, p <span class="kw">in</span> points_gdf.iterrows():</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _, district <span class="kw">in</span> districts_gdf.iterrows():</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> point_in_polygon(p[<span class="st">"geometry"</span>], district[<span class="st">"geometry"</span>]):</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>                    points_gdf.loc[p.name, <span class="st">"sb_name"</span>] <span class="op">=</span> district[<span class="st">"sb_name"</span>]</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">break</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Error processing point </span><span class="sc">{</span>p<span class="sc">.</span>name<span class="sc">}</span><span class="ss"> and district </span><span class="sc">{</span>district[<span class="st">'sb_name'</span>]<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> points_gdf</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rank_districts(districts_gdf, points_path, column<span class="op">=</span><span class="st">"adresse"</span>):</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co">    Rank districts based on the number of neighbourhoods they contain.</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    points_data <span class="op">=</span> load_geojson(points_path)</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    points_gdf <span class="op">=</span> convert_to_geodataframe(points_data)</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    points_gdf <span class="op">=</span> map_polygons_to_points(districts_gdf, points_gdf)</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    plot_gdfs([districts_gdf, points_gdf], columns<span class="op">=</span>[<span class="st">"sb_name"</span>, column])</span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> points_gdf.groupby(<span class="st">"sb_name"</span>).size().sort_values(ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_geojson(path):</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Docstring for load_geojson</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(path, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> f:</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> json.load(f)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> data</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_to_geodataframe(data):</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    Docstring for convert_to_geodataframe</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gpd.GeoDataFrame.from_features(data[<span class="st">"features"</span>])</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> point_in_polygon(point, polygon):</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">    Docstring for point_in_polygon</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> polygon.contains(point)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_gdfs(gdfs, columns):</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">    Plot multiple GeoDataFrames on the same plot, optionally coloring by a specified column.</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gdf, column <span class="kw">in</span> <span class="bu">zip</span>(gdfs, columns):</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        gdf.plot(ax<span class="op">=</span>ax, column<span class="op">=</span>column, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> map_polygons_to_points(districts_gdf, points_gdf):</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co">    Map each neighbourhood to its corresponding district based on spatial containment.</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _, p <span class="kw">in</span> points_gdf.iterrows():</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _, district <span class="kw">in</span> districts_gdf.iterrows():</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> point_in_polygon(p[<span class="st">"geometry"</span>], district[<span class="st">"geometry"</span>]):</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                    points_gdf.loc[p.name, <span class="st">"sb_name"</span>] <span class="op">=</span> district[<span class="st">"sb_name"</span>]</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">break</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Error processing point </span><span class="sc">{</span>p<span class="sc">.</span>name<span class="sc">}</span><span class="ss"> and district </span><span class="sc">{</span>district[<span class="st">'sb_name'</span>]<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> points_gdf</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rank_districts(districts_gdf, points_path, column<span class="op">=</span><span class="st">"adresse"</span>):</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co">    Rank districts based on the number of neighbourhoods they contain.</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    points_data <span class="op">=</span> load_geojson(points_path)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    points_gdf <span class="op">=</span> convert_to_geodataframe(points_data)</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    points_gdf <span class="op">=</span> map_polygons_to_points(districts_gdf, points_gdf)</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    points_gdf <span class="op">=</span> points_gdf.merge(districts_gdf[[<span class="st">"sb_name"</span>, <span class="st">"bevölkerung"</span>]], on<span class="op">=</span><span class="st">"sb_name"</span>, how<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    plot_gdfs([districts_gdf, points_gdf], columns<span class="op">=</span>[<span class="st">"sb_name"</span>, column])</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> points_gdf.groupby([<span class="st">"sb_name"</span>, <span class="st">"bevölkerung"</span>]).size().reset_index(name<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    out[<span class="st">"count_pp"</span>] <span class="op">=</span> out[<span class="st">"count"</span>] <span class="op">/</span> out[<span class="st">"bevölkerung"</span>]</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out.sort_values(<span class="st">"count_pp"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="die-münchner-stadtbezirke" class="level1">
 <h1>Die Münchner Stadtbezirke</h1>
-<div id="eade48e4" class="cell" data-execution_count="2">
+<div id="5a19be66" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>districts_data <span class="op">=</span> load_geojson(<span class="st">"data/districts.geojson"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>districts_gdf <span class="op">=</span> convert_to_geodataframe(districts_data)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>districts_gdf.plot(column<span class="op">=</span><span class="st">"sb_name"</span>, legend<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>districts_population <span class="op">=</span> pd.read_csv(<span class="st">"data/districts_population.csv"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>districts_population[[<span class="st">"bevölkerung"</span>]] <span class="op">=</span> districts_population[[<span class="st">"bevölkerung"</span>]].replace({<span class="st">"[, .]"</span>: <span class="st">""</span>}, regex<span class="op">=</span><span class="va">True</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>districts_gdf <span class="op">=</span> convert_to_geodataframe(districts_data)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>districts_gdf[<span class="st">"sb_nummer"</span>] <span class="op">=</span> districts_gdf[<span class="st">"sb_nummer"</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>districts_gdf <span class="op">=</span> districts_gdf.merge(districts_population, left_on<span class="op">=</span><span class="st">"sb_nummer"</span>, right_on<span class="op">=</span><span class="st">"stadtbezirksnummer"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>districts_gdf.plot(column<span class="op">=</span><span class="st">"sb_name"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>districts_gdf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">geometry</th>
+<th data-quarto-table-cell-role="th">sb_nummer</th>
+<th data-quarto-table-cell-role="th">sb_name</th>
+<th data-quarto-table-cell-role="th">flaeche_qm</th>
+<th data-quarto-table-cell-role="th">stadtbezirksnummer</th>
+<th data-quarto-table-cell-role="th">stadtbezirk</th>
+<th data-quarto-table-cell-role="th">bevölkerung</th>
+<th data-quarto-table-cell-role="th">bevölkerung in prozent</th>
+<th data-quarto-table-cell-role="th">fläche in ha</th>
+<th data-quarto-table-cell-role="th">fläche in prozent</th>
+<th data-quarto-table-cell-role="th">einwohnerdichte</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>POLYGON ((691821.837 5339259.125, 691767.291 5...</td>
+<td>4</td>
+<td>Schwabing-West</td>
+<td>4.363287e+06</td>
+<td>4</td>
+<td>Schwabing West</td>
+<td>68610</td>
+<td>4.3</td>
+<td>436.33</td>
+<td>1.4</td>
+<td>157</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>POLYGON ((685540.466 5327534.649, 685543.41 53...</td>
+<td>19</td>
+<td>Thalkirchen-Obersendling-Forstenried-Fürstenri...</td>
+<td>1.776349e+07</td>
+<td>19</td>
+<td>Thalkirchen - Obersendling - Forstenried - Für...</td>
+<td>103717</td>
+<td>6.5</td>
+<td>1776.35</td>
+<td>5.7</td>
+<td>58</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>POLYGON ((689968.496 5331316.396, 689963.03 53...</td>
+<td>19</td>
+<td>Thalkirchen-Obersendling-Forstenried-Fürstenri...</td>
+<td>1.776349e+07</td>
+<td>19</td>
+<td>Thalkirchen - Obersendling - Forstenried - Für...</td>
+<td>103717</td>
+<td>6.5</td>
+<td>1776.35</td>
+<td>5.7</td>
+<td>58</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>POLYGON ((698523.625 5337387.299, 698428.438 5...</td>
+<td>15</td>
+<td>Trudering-Riem</td>
+<td>2.245392e+07</td>
+<td>15</td>
+<td>Trudering - Riem</td>
+<td>76280</td>
+<td>4.8</td>
+<td>2245.39</td>
+<td>7.2</td>
+<td>34</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>POLYGON ((682919.357 5338681.106, 682929.131 5...</td>
+<td>21</td>
+<td>Pasing-Obermenzing</td>
+<td>1.649754e+07</td>
+<td>21</td>
+<td>Pasing - Obermenzing</td>
+<td>81804</td>
+<td>5.1</td>
+<td>1649.75</td>
+<td>5.3</td>
+<td>50</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>POLYGON ((689722.841 5335359.37, 689570.385 53...</td>
+<td>2</td>
+<td>Ludwigsvorstadt-Isarvorstadt</td>
+<td>4.401651e+06</td>
+<td>2</td>
+<td>Ludwigsvorstadt - Isarvorstadt</td>
+<td>50081</td>
+<td>3.1</td>
+<td>440.17</td>
+<td>1.4</td>
+<td>114</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>POLYGON ((683486.613 5341924.198, 683481.27 53...</td>
+<td>10</td>
+<td>Moosach</td>
+<td>1.109367e+07</td>
+<td>10</td>
+<td>Moosach</td>
+<td>56015</td>
+<td>3.5</td>
+<td>1109.37</td>
+<td>3.6</td>
+<td>50</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>POLYGON ((684558.078 5342934.959, 684558.412 5...</td>
+<td>23</td>
+<td>Allach-Untermenzing</td>
+<td>1.545119e+07</td>
+<td>23</td>
+<td>Allach - Untermenzing</td>
+<td>36230</td>
+<td>2.3</td>
+<td>1545.12</td>
+<td>5.0</td>
+<td>23</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>POLYGON ((687534.976 5346097.716, 687507.106 5...</td>
+<td>24</td>
+<td>Feldmoching-Hasenbergl</td>
+<td>2.893845e+07</td>
+<td>24</td>
+<td>Feldmoching - Hasenbergl</td>
+<td>63756</td>
+<td>4.0</td>
+<td>2893.85</td>
+<td>9.3</td>
+<td>22</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>POLYGON ((690447.74 5328289.784, 690497.261 53...</td>
+<td>18</td>
+<td>Untergiesing-Harlaching</td>
+<td>8.057218e+06</td>
+<td>18</td>
+<td>Untergiesing - Harlaching</td>
+<td>54067</td>
+<td>3.4</td>
+<td>805.72</td>
+<td>2.6</td>
+<td>67</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>POLYGON ((691220.643 5333055.074, 691217.702 5...</td>
+<td>18</td>
+<td>Untergiesing-Harlaching</td>
+<td>8.057218e+06</td>
+<td>18</td>
+<td>Untergiesing - Harlaching</td>
+<td>54067</td>
+<td>3.4</td>
+<td>805.72</td>
+<td>2.6</td>
+<td>67</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>POLYGON ((687931.605 5334552.238, 687876.365 5...</td>
+<td>7</td>
+<td>Sendling-Westpark</td>
+<td>7.814853e+06</td>
+<td>7</td>
+<td>Sendling - Westpark</td>
+<td>62240</td>
+<td>3.9</td>
+<td>781.49</td>
+<td>2.5</td>
+<td>80</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>POLYGON ((689091.353 5335270.96, 688991.703 53...</td>
+<td>8</td>
+<td>Schwanthalerhöhe</td>
+<td>2.070313e+06</td>
+<td>8</td>
+<td>Schwanthalerhöhe</td>
+<td>28684</td>
+<td>1.8</td>
+<td>207.03</td>
+<td>0.7</td>
+<td>139</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>POLYGON ((690674.877 5336921.715, 690657.282 5...</td>
+<td>3</td>
+<td>Maxvorstadt</td>
+<td>4.298192e+06</td>
+<td>3</td>
+<td>Maxvorstadt</td>
+<td>52434</td>
+<td>3.3</td>
+<td>429.82</td>
+<td>1.4</td>
+<td>122</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>POLYGON ((688743.237 5333793.444, 688732.857 5...</td>
+<td>6</td>
+<td>Sendling</td>
+<td>3.938932e+06</td>
+<td>6</td>
+<td>Sendling</td>
+<td>41002</td>
+<td>2.6</td>
+<td>393.89</td>
+<td>1.3</td>
+<td>104</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>POLYGON ((693335.361 5333190.039, 693336.169 5...</td>
+<td>17</td>
+<td>Obergiesing-Fasangarten</td>
+<td>5.720866e+06</td>
+<td>17</td>
+<td>Obergiesing - Fasangarten</td>
+<td>54352</td>
+<td>3.4</td>
+<td>572.09</td>
+<td>1.8</td>
+<td>95</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>POLYGON ((693021.981 5335306.773, 693021.084 5...</td>
+<td>5</td>
+<td>Au-Haidhausen</td>
+<td>4.219983e+06</td>
+<td>5</td>
+<td>Au - Haidhausen</td>
+<td>63972</td>
+<td>4.0</td>
+<td>422.00</td>
+<td>1.4</td>
+<td>152</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>POLYGON ((693542.885 5333396.806, 693542.516 5...</td>
+<td>16</td>
+<td>Ramersdorf-Perlach</td>
+<td>1.989714e+07</td>
+<td>16</td>
+<td>Ramersdorf - Perlach</td>
+<td>120776</td>
+<td>7.5</td>
+<td>1989.71</td>
+<td>6.4</td>
+<td>61</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>POLYGON ((685647.268 5335476.679, 685606.425 5...</td>
+<td>25</td>
+<td>Laim</td>
+<td>5.286015e+06</td>
+<td>25</td>
+<td>Laim</td>
+<td>57116</td>
+<td>3.6</td>
+<td>528.60</td>
+<td>1.7</td>
+<td>108</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>POLYGON ((692704.77 5336941.154, 692682.921 53...</td>
+<td>1</td>
+<td>Altstadt-Lehel</td>
+<td>3.145888e+06</td>
+<td>1</td>
+<td>Altstadt - Lehel</td>
+<td>20876</td>
+<td>1.3</td>
+<td>314.59</td>
+<td>1.0</td>
+<td>66</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>POLYGON ((696816.489 5334799.183, 696798.794 5...</td>
+<td>14</td>
+<td>Berg am Laim</td>
+<td>6.315331e+06</td>
+<td>14</td>
+<td>Berg am Laim</td>
+<td>47367</td>
+<td>3.0</td>
+<td>631.53</td>
+<td>2.0</td>
+<td>75</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>POLYGON ((680687.912 5341888.997, 680691.947 5...</td>
+<td>22</td>
+<td>Aubing-Lochhausen-Langwied</td>
+<td>3.405732e+07</td>
+<td>22</td>
+<td>Aubing - Lochhausen - Langwied</td>
+<td>61011</td>
+<td>3.8</td>
+<td>3405.73</td>
+<td>11.0</td>
+<td>18</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>POLYGON ((684377.103 5333780.185, 684366.74 53...</td>
+<td>20</td>
+<td>Hadern</td>
+<td>9.223789e+06</td>
+<td>20</td>
+<td>Hadern</td>
+<td>51637</td>
+<td>3.2</td>
+<td>922.38</td>
+<td>3.0</td>
+<td>56</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>POLYGON ((700340.626 5339842.572, 700309.859 5...</td>
+<td>13</td>
+<td>Bogenhausen</td>
+<td>2.371296e+07</td>
+<td>13</td>
+<td>Bogenhausen</td>
+<td>95475</td>
+<td>6.0</td>
+<td>2371.30</td>
+<td>7.6</td>
+<td>40</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>POLYGON ((689485.672 5338343.264, 689471.049 5...</td>
+<td>9</td>
+<td>Neuhausen-Nymphenburg</td>
+<td>1.291486e+07</td>
+<td>9</td>
+<td>Neuhausen - Nymphenburg</td>
+<td>101901</td>
+<td>6.4</td>
+<td>1291.49</td>
+<td>4.2</td>
+<td>79</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>POLYGON ((692143.6 5344442.981, 692137.357 534...</td>
+<td>11</td>
+<td>Milbertshofen-Am Hart</td>
+<td>1.341721e+07</td>
+<td>11</td>
+<td>Milbertshofen - Am Hart</td>
+<td>77281</td>
+<td>4.8</td>
+<td>1341.72</td>
+<td>4.3</td>
+<td>58</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>POLYGON ((694974.912 5345089.521, 694907.447 5...</td>
+<td>12</td>
+<td>Schwabing-Freimann</td>
+<td>2.567477e+07</td>
+<td>12</td>
+<td>Schwabing - Freimann</td>
+<td>77092</td>
+<td>4.8</td>
+<td>2567.48</td>
+<td>8.3</td>
+<td>30</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="main_files/figure-html/cell-3-output-1.png" width="549" height="425" class="figure-img"></p>
+<p><img src="main_files/figure-html/cell-3-output-2.png" width="549" height="425" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -175,7 +591,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="nachbarschaftstreffs" class="level1">
 <h1>Nachbarschaftstreffs</h1>
-<div id="ffaac820" class="cell" data-execution_count="3">
+<div id="2855c167" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/neighbourhoods.geojson"</span>, column<span class="op">=</span><span class="st">"st2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -184,37 +600,179 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>sb_name
-Ramersdorf-Perlach                                        10
-Trudering-Riem                                             4
-Feldmoching-Hasenbergl                                     4
-Milbertshofen-Am Hart                                      4
-Schwabing-Freimann                                         4
-Berg am Laim                                               3
-Hadern                                                     3
-Schwabing-West                                             3
-Pasing-Obermenzing                                         2
-Thalkirchen-Obersendling-Forstenried-Fürstenried-Solln     2
-Sendling                                                   2
-Au-Haidhausen                                              2
-Obergiesing-Fasangarten                                    2
-Moosach                                                    2
-Neuhausen-Nymphenburg                                      2
-Aubing-Lochhausen-Langwied                                 1
-Maxvorstadt                                                1
-Schwanthalerhöhe                                           1
-Ludwigsvorstadt-Isarvorstadt                               1
-Sendling-Westpark                                          1
-Laim                                                       1
-dtype: int64</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sb_name</th>
+<th data-quarto-table-cell-role="th">bevölkerung</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">count_pp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Ramersdorf-Perlach</td>
+<td>120776</td>
+<td>10</td>
+<td>0.000083</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Berg am Laim</td>
+<td>47367</td>
+<td>3</td>
+<td>0.000063</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Feldmoching-Hasenbergl</td>
+<td>63756</td>
+<td>4</td>
+<td>0.000063</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Hadern</td>
+<td>51637</td>
+<td>3</td>
+<td>0.000058</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Trudering-Riem</td>
+<td>76280</td>
+<td>4</td>
+<td>0.000052</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Schwabing-Freimann</td>
+<td>77092</td>
+<td>4</td>
+<td>0.000052</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Milbertshofen-Am Hart</td>
+<td>77281</td>
+<td>4</td>
+<td>0.000052</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Sendling</td>
+<td>41002</td>
+<td>2</td>
+<td>0.000049</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Schwabing-West</td>
+<td>68610</td>
+<td>3</td>
+<td>0.000044</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Thalkirchen-Obersendling-Forstenried-Fürstenri...</td>
+<td>103717</td>
+<td>4</td>
+<td>0.000039</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Obergiesing-Fasangarten</td>
+<td>54352</td>
+<td>2</td>
+<td>0.000037</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Moosach</td>
+<td>56015</td>
+<td>2</td>
+<td>0.000036</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Schwanthalerhöhe</td>
+<td>28684</td>
+<td>1</td>
+<td>0.000035</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Au-Haidhausen</td>
+<td>63972</td>
+<td>2</td>
+<td>0.000031</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Pasing-Obermenzing</td>
+<td>81804</td>
+<td>2</td>
+<td>0.000024</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Ludwigsvorstadt-Isarvorstadt</td>
+<td>50081</td>
+<td>1</td>
+<td>0.000020</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Neuhausen-Nymphenburg</td>
+<td>101901</td>
+<td>2</td>
+<td>0.000020</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Maxvorstadt</td>
+<td>52434</td>
+<td>1</td>
+<td>0.000019</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Laim</td>
+<td>57116</td>
+<td>1</td>
+<td>0.000018</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Aubing-Lochhausen-Langwied</td>
+<td>61011</td>
+<td>1</td>
+<td>0.000016</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Sendling-Westpark</td>
+<td>62240</td>
+<td>1</td>
+<td>0.000016</td>
+</tr>
+</tbody>
+</table>
+
+</div>
 </div>
 </div>
 </section>
 <section id="öffentlichen-toiletten" class="level1">
 <h1>Öffentlichen Toiletten</h1>
-<div id="4f881f37" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/wc_finder_opendata.geojson"</span>, column<span class="op">=</span><span class="st">"strasse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="a2676650" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/wc_finder_opendata.geojson"</span>, column<span class="op">=</span><span class="st">"strasse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -222,41 +780,207 @@ dtype: int64</code></pre>
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>sb_name
-Obergiesing-Fasangarten                                   22
-Thalkirchen-Obersendling-Forstenried-Fürstenried-Solln    18
-Hadern                                                    18
-Ludwigsvorstadt-Isarvorstadt                              18
-Milbertshofen-Am Hart                                     18
-Altstadt-Lehel                                            17
-Sendling                                                  15
-Au-Haidhausen                                             14
-Trudering-Riem                                            14
-Feldmoching-Hasenbergl                                    14
-Untergiesing-Harlaching                                   13
-Bogenhausen                                               13
-Sendling-Westpark                                         13
-Schwabing-West                                            13
-Ramersdorf-Perlach                                        12
-Moosach                                                   10
-Laim                                                      10
-Neuhausen-Nymphenburg                                      9
-Maxvorstadt                                                8
-Schwabing-Freimann                                         6
-Aubing-Lochhausen-Langwied                                 6
-Pasing-Obermenzing                                         5
-Berg am Laim                                               5
-Allach-Untermenzing                                        4
-Schwanthalerhöhe                                           3
-dtype: int64</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sb_name</th>
+<th data-quarto-table-cell-role="th">bevölkerung</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">count_pp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Altstadt-Lehel</td>
+<td>20876.0</td>
+<td>17</td>
+<td>0.000814</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">24</td>
+<td>Untergiesing-Harlaching</td>
+<td>54067.0</td>
+<td>26</td>
+<td>0.000481</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Obergiesing-Fasangarten</td>
+<td>54352.0</td>
+<td>22</td>
+<td>0.000405</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Sendling</td>
+<td>41002.0</td>
+<td>15</td>
+<td>0.000366</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Ludwigsvorstadt-Isarvorstadt</td>
+<td>50081.0</td>
+<td>18</td>
+<td>0.000359</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Hadern</td>
+<td>51637.0</td>
+<td>18</td>
+<td>0.000349</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Thalkirchen-Obersendling-Forstenried-Fürstenri...</td>
+<td>103717.0</td>
+<td>36</td>
+<td>0.000347</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Milbertshofen-Am Hart</td>
+<td>77281.0</td>
+<td>18</td>
+<td>0.000233</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Feldmoching-Hasenbergl</td>
+<td>63756.0</td>
+<td>14</td>
+<td>0.000220</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Au-Haidhausen</td>
+<td>63972.0</td>
+<td>14</td>
+<td>0.000219</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Sendling-Westpark</td>
+<td>62240.0</td>
+<td>13</td>
+<td>0.000209</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Schwabing-West</td>
+<td>68610.0</td>
+<td>13</td>
+<td>0.000189</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Trudering-Riem</td>
+<td>76280.0</td>
+<td>14</td>
+<td>0.000184</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Moosach</td>
+<td>56015.0</td>
+<td>10</td>
+<td>0.000179</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Laim</td>
+<td>57116.0</td>
+<td>10</td>
+<td>0.000175</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Maxvorstadt</td>
+<td>52434.0</td>
+<td>8</td>
+<td>0.000153</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Bogenhausen</td>
+<td>95475.0</td>
+<td>13</td>
+<td>0.000136</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Allach-Untermenzing</td>
+<td>36230.0</td>
+<td>4</td>
+<td>0.000110</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Berg am Laim</td>
+<td>47367.0</td>
+<td>5</td>
+<td>0.000106</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Schwanthalerhöhe</td>
+<td>28684.0</td>
+<td>3</td>
+<td>0.000105</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Ramersdorf-Perlach</td>
+<td>120776.0</td>
+<td>12</td>
+<td>0.000099</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Aubing-Lochhausen-Langwied</td>
+<td>61011.0</td>
+<td>6</td>
+<td>0.000098</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Neuhausen-Nymphenburg</td>
+<td>101901.0</td>
+<td>9</td>
+<td>0.000088</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Schwabing-Freimann</td>
+<td>77092.0</td>
+<td>6</td>
+<td>0.000078</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Pasing-Obermenzing</td>
+<td>81804.0</td>
+<td>5</td>
+<td>0.000061</td>
+</tr>
+</tbody>
+</table>
+
+</div>
 </div>
 </div>
 </section>
 <section id="märkte" class="level1">
 <h1>Märkte</h1>
-<div id="7be07d52" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/markets.geojson"</span>, column<span class="op">=</span><span class="st">"adresse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="eb134138" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/markets.geojson"</span>, column<span class="op">=</span><span class="st">"adresse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -264,41 +988,207 @@ dtype: int64</code></pre>
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>sb_name
-Sendling                                                  6
-Au-Haidhausen                                             4
-Thalkirchen-Obersendling-Forstenried-Fürstenried-Solln    4
-Schwabing-Freimann                                        3
-Feldmoching-Hasenbergl                                    3
-Hadern                                                    3
-Altstadt-Lehel                                            3
-Maxvorstadt                                               3
-Ramersdorf-Perlach                                        2
-Pasing-Obermenzing                                        2
-Obergiesing-Fasangarten                                   2
-Untergiesing-Harlaching                                   2
-Schwabing-West                                            2
-Bogenhausen                                               2
-Trudering-Riem                                            2
-Aubing-Lochhausen-Langwied                                2
-Schwanthalerhöhe                                          1
-Sendling-Westpark                                         1
-Allach-Untermenzing                                       1
-Neuhausen-Nymphenburg                                     1
-Milbertshofen-Am Hart                                     1
-Ludwigsvorstadt-Isarvorstadt                              1
-Laim                                                      1
-Berg am Laim                                              1
-Moosach                                                   1
-dtype: int64</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sb_name</th>
+<th data-quarto-table-cell-role="th">bevölkerung</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">count_pp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Sendling</td>
+<td>41002</td>
+<td>6</td>
+<td>0.000146</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Altstadt-Lehel</td>
+<td>20876</td>
+<td>3</td>
+<td>0.000144</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Thalkirchen-Obersendling-Forstenried-Fürstenri...</td>
+<td>103717</td>
+<td>8</td>
+<td>0.000077</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">24</td>
+<td>Untergiesing-Harlaching</td>
+<td>54067</td>
+<td>4</td>
+<td>0.000074</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Au-Haidhausen</td>
+<td>63972</td>
+<td>4</td>
+<td>0.000063</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Hadern</td>
+<td>51637</td>
+<td>3</td>
+<td>0.000058</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Maxvorstadt</td>
+<td>52434</td>
+<td>3</td>
+<td>0.000057</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Feldmoching-Hasenbergl</td>
+<td>63756</td>
+<td>3</td>
+<td>0.000047</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Schwabing-Freimann</td>
+<td>77092</td>
+<td>3</td>
+<td>0.000039</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Obergiesing-Fasangarten</td>
+<td>54352</td>
+<td>2</td>
+<td>0.000037</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Schwanthalerhöhe</td>
+<td>28684</td>
+<td>1</td>
+<td>0.000035</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Aubing-Lochhausen-Langwied</td>
+<td>61011</td>
+<td>2</td>
+<td>0.000033</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Schwabing-West</td>
+<td>68610</td>
+<td>2</td>
+<td>0.000029</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Allach-Untermenzing</td>
+<td>36230</td>
+<td>1</td>
+<td>0.000028</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Trudering-Riem</td>
+<td>76280</td>
+<td>2</td>
+<td>0.000026</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Pasing-Obermenzing</td>
+<td>81804</td>
+<td>2</td>
+<td>0.000024</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Berg am Laim</td>
+<td>47367</td>
+<td>1</td>
+<td>0.000021</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Bogenhausen</td>
+<td>95475</td>
+<td>2</td>
+<td>0.000021</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Ludwigsvorstadt-Isarvorstadt</td>
+<td>50081</td>
+<td>1</td>
+<td>0.000020</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Moosach</td>
+<td>56015</td>
+<td>1</td>
+<td>0.000018</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Laim</td>
+<td>57116</td>
+<td>1</td>
+<td>0.000018</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Ramersdorf-Perlach</td>
+<td>120776</td>
+<td>2</td>
+<td>0.000017</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Sendling-Westpark</td>
+<td>62240</td>
+<td>1</td>
+<td>0.000016</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Milbertshofen-Am Hart</td>
+<td>77281</td>
+<td>1</td>
+<td>0.000013</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Neuhausen-Nymphenburg</td>
+<td>101901</td>
+<td>1</td>
+<td>0.000010</td>
+</tr>
+</tbody>
+</table>
+
+</div>
 </div>
 </div>
 </section>
 <section id="baustellen" class="level1">
 <h1>Baustellen</h1>
-<div id="110fd187" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/baustellen_opendata.geojson"</span>, column<span class="op">=</span><span class="st">"strasse_hausnr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="41da1f65" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/baustellen_opendata.geojson"</span>, column<span class="op">=</span><span class="st">"strasse_hausnr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Error processing point 226 and district Ludwigsvorstadt-Isarvorstadt: TopologyException: side location conflict at 692201.38959862757 5334920.3457127875. This can occur if the input geometry is invalid.
 Error processing point 226 and district Au-Haidhausen: TopologyException: side location conflict at 692201.38959862757 5334920.3457127875. This can occur if the input geometry is invalid.
@@ -327,72 +1217,7 @@ Error processing point 4587 and district Altstadt-Lehel: TopologyException: side
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>sb_name
-Altstadt-Lehel                                            388
-Maxvorstadt                                               373
-Neuhausen-Nymphenburg                                     344
-Ludwigsvorstadt-Isarvorstadt                              322
-Schwabing-Freimann                                        274
-Laim                                                      257
-Pasing-Obermenzing                                        256
-Thalkirchen-Obersendling-Forstenried-Fürstenried-Solln    245
-Schwabing-West                                            243
-Bogenhausen                                               237
-Au-Haidhausen                                             236
-Milbertshofen-Am Hart                                     135
-Sendling-Westpark                                         132
-Hadern                                                    121
-Allach-Untermenzing                                       121
-Ramersdorf-Perlach                                        112
-Trudering-Riem                                            109
-Aubing-Lochhausen-Langwied                                 93
-Obergiesing-Fasangarten                                    91
-Untergiesing-Harlaching                                    85
-Berg am Laim                                               75
-Moosach                                                    74
-Feldmoching-Hasenbergl                                     65
-Sendling                                                   54
-Schwanthalerhöhe                                           50
-dtype: int64</code></pre>
-</div>
-</div>
-</section>
-<section id="zuständige-kaminkehrer" class="level1">
-<h1>Zuständige Kaminkehrer</h1>
-<div id="8839e953" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/kaminkehrer.geojson"</span>, column<span class="op">=</span><span class="st">"kehrbezirk"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="main_files/figure-html/cell-8-output-1.png" width="811" height="626" class="figure-img"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="7">
-<pre><code>sb_name
-Pasing-Obermenzing                                        19
-Allach-Untermenzing                                        8
-Neuhausen-Nymphenburg                                      7
-Thalkirchen-Obersendling-Forstenried-Fürstenried-Solln     7
-Maxvorstadt                                                5
-Au-Haidhausen                                              4
-Obergiesing-Fasangarten                                    4
-Laim                                                       3
-Moosach                                                    2
-Bogenhausen                                                1
-Ludwigsvorstadt-Isarvorstadt                               1
-Ramersdorf-Perlach                                         1
-Schwabing-West                                             1
-Untergiesing-Harlaching                                    1
-dtype: int64</code></pre>
-</div>
-</div>
-<div id="27fdf330" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> load_geojson(<span class="st">"data/kaminkehrer.geojson"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> convert_to_geodataframe(data)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>gdf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -400,94 +1225,322 @@ dtype: int64</code></pre>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">geometry</th>
-<th data-quarto-table-cell-role="th">flaeche</th>
-<th data-quarto-table-cell-role="th">kehr_nr</th>
-<th data-quarto-table-cell-role="th">kehrbezirk</th>
+<th data-quarto-table-cell-role="th">sb_name</th>
+<th data-quarto-table-cell-role="th">bevölkerung</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">count_pp</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>POLYGON ((684743.767 5335018.788, 684748.309 5...</td>
-<td>55318</td>
-<td>24/06</td>
-<td>24</td>
+<td data-quarto-table-cell-role="th">1</td>
+<td>Altstadt-Lehel</td>
+<td>20876.0</td>
+<td>388</td>
+<td>0.018586</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>POLYGON ((682040.043 5339365.352, 682044.399 5...</td>
-<td>257493</td>
-<td>87/02</td>
-<td>87</td>
+<td data-quarto-table-cell-role="th">10</td>
+<td>Maxvorstadt</td>
+<td>52434.0</td>
+<td>373</td>
+<td>0.007114</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>POLYGON ((680966.107 5337403.876, 680967.58 53...</td>
-<td>88217</td>
-<td>06/03</td>
-<td>06</td>
+<td data-quarto-table-cell-role="th">9</td>
+<td>Ludwigsvorstadt-Isarvorstadt</td>
+<td>50081.0</td>
+<td>322</td>
+<td>0.006430</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>POLYGON ((683678.177 5335097.087, 683675.604 5...</td>
-<td>145375</td>
-<td>29/10</td>
-<td>29</td>
+<td data-quarto-table-cell-role="th">22</td>
+<td>Thalkirchen-Obersendling-Forstenried-Fürstenri...</td>
+<td>103717.0</td>
+<td>490</td>
+<td>0.004724</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Laim</td>
+<td>57116.0</td>
+<td>257</td>
+<td>0.004500</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Au-Haidhausen</td>
+<td>63972.0</td>
+<td>236</td>
+<td>0.003689</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Schwabing-Freimann</td>
+<td>77092.0</td>
+<td>274</td>
+<td>0.003554</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Schwabing-West</td>
+<td>68610.0</td>
+<td>243</td>
+<td>0.003542</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Neuhausen-Nymphenburg</td>
+<td>101901.0</td>
+<td>344</td>
+<td>0.003376</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Allach-Untermenzing</td>
+<td>36230.0</td>
+<td>121</td>
+<td>0.003340</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>Untergiesing-Harlaching</td>
+<td>54067.0</td>
+<td>170</td>
+<td>0.003144</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Pasing-Obermenzing</td>
+<td>81804.0</td>
+<td>256</td>
+<td>0.003129</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Bogenhausen</td>
+<td>95475.0</td>
+<td>237</td>
+<td>0.002482</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Hadern</td>
+<td>51637.0</td>
+<td>121</td>
+<td>0.002343</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Sendling-Westpark</td>
+<td>62240.0</td>
+<td>132</td>
+<td>0.002121</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Milbertshofen-Am Hart</td>
+<td>77281.0</td>
+<td>135</td>
+<td>0.001747</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Schwanthalerhöhe</td>
+<td>28684.0</td>
+<td>50</td>
+<td>0.001743</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Obergiesing-Fasangarten</td>
+<td>54352.0</td>
+<td>91</td>
+<td>0.001674</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>POLYGON ((691381.574 5336597.462, 691378.537 5...</td>
-<td>9941</td>
-<td>09/01</td>
-<td>09</td>
+<td>Berg am Laim</td>
+<td>47367.0</td>
+<td>75</td>
+<td>0.001583</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
+<td data-quarto-table-cell-role="th">3</td>
+<td>Aubing-Lochhausen-Langwied</td>
+<td>61011.0</td>
+<td>93</td>
+<td>0.001524</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">174</td>
-<td>POLYGON ((691914.406 5331771.409, 691874.189 5...</td>
-<td>1184321</td>
-<td>83/00</td>
-<td>83</td>
+<td data-quarto-table-cell-role="th">23</td>
+<td>Trudering-Riem</td>
+<td>76280.0</td>
+<td>109</td>
+<td>0.001429</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">175</td>
-<td>POLYGON ((694256.695 5334139.993, 694275.412 5...</td>
-<td>2043792</td>
-<td>55/01</td>
-<td>55</td>
+<td data-quarto-table-cell-role="th">12</td>
+<td>Moosach</td>
+<td>56015.0</td>
+<td>74</td>
+<td>0.001321</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">176</td>
-<td>POLYGON ((693470.941 5334139.341, 693456.345 5...</td>
-<td>2043792</td>
-<td>69/02</td>
-<td>69</td>
+<td data-quarto-table-cell-role="th">20</td>
+<td>Sendling</td>
+<td>41002.0</td>
+<td>54</td>
+<td>0.001317</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">177</td>
-<td>POLYGON ((693422.289 5333498.741, 693602.431 5...</td>
-<td>2043792</td>
-<td>69/03</td>
-<td>69</td>
+<td data-quarto-table-cell-role="th">6</td>
+<td>Feldmoching-Hasenbergl</td>
+<td>63756.0</td>
+<td>65</td>
+<td>0.001020</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">178</td>
-<td>POLYGON ((689391.81 5331671.078, 689390.941 53...</td>
-<td>1226078</td>
-<td>47/01</td>
-<td>47</td>
+<td data-quarto-table-cell-role="th">16</td>
+<td>Ramersdorf-Perlach</td>
+<td>120776.0</td>
+<td>112</td>
+<td>0.000927</td>
 </tr>
 </tbody>
 </table>
 
-<p>179 rows × 4 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="zuständige-kaminkehrer" class="level1">
+<h1>Zuständige Kaminkehrer</h1>
+<div id="4ad96c0b" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>rank_districts(districts_gdf, <span class="st">"data/kaminkehrer.geojson"</span>, column<span class="op">=</span><span class="st">"kehrbezirk"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/cell-8-output-1.png" width="811" height="626" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sb_name</th>
+<th data-quarto-table-cell-role="th">bevölkerung</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">count_pp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Pasing-Obermenzing</td>
+<td>81804.0</td>
+<td>19</td>
+<td>0.000232</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Allach-Untermenzing</td>
+<td>36230.0</td>
+<td>8</td>
+<td>0.000221</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Thalkirchen-Obersendling-Forstenried-Fürstenri...</td>
+<td>103717.0</td>
+<td>14</td>
+<td>0.000135</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Maxvorstadt</td>
+<td>52434.0</td>
+<td>5</td>
+<td>0.000095</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Obergiesing-Fasangarten</td>
+<td>54352.0</td>
+<td>4</td>
+<td>0.000074</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Neuhausen-Nymphenburg</td>
+<td>101901.0</td>
+<td>7</td>
+<td>0.000069</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Au-Haidhausen</td>
+<td>63972.0</td>
+<td>4</td>
+<td>0.000063</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Laim</td>
+<td>57116.0</td>
+<td>3</td>
+<td>0.000053</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Untergiesing-Harlaching</td>
+<td>54067.0</td>
+<td>2</td>
+<td>0.000037</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Moosach</td>
+<td>56015.0</td>
+<td>2</td>
+<td>0.000036</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Ludwigsvorstadt-Isarvorstadt</td>
+<td>50081.0</td>
+<td>1</td>
+<td>0.000020</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Schwabing-West</td>
+<td>68610.0</td>
+<td>1</td>
+<td>0.000015</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Bogenhausen</td>
+<td>95475.0</td>
+<td>1</td>
+<td>0.000010</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Ramersdorf-Perlach</td>
+<td>120776.0</td>
+<td>1</td>
+<td>0.000008</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
 </div>

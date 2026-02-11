@@ -5,6 +5,7 @@ format: html
 
 ```{python}
 import json
+import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
@@ -59,15 +60,25 @@ def rank_districts(districts_gdf, points_path, column="adresse"):
     points_data = load_geojson(points_path)
     points_gdf = convert_to_geodataframe(points_data)
     points_gdf = map_polygons_to_points(districts_gdf, points_gdf)
+    points_gdf = points_gdf.merge(districts_gdf[["sb_name", "bevölkerung"]], on="sb_name", how="left")
     plot_gdfs([districts_gdf, points_gdf], columns=["sb_name", column])
-    return points_gdf.groupby("sb_name").size().sort_values(ascending=False)
+    out = points_gdf.groupby(["sb_name", "bevölkerung"]).size().reset_index(name="count")
+    out["count_pp"] = out["count"] / out["bevölkerung"]
+    return out.sort_values("count_pp", ascending=False)
 ```
 
 # Die Münchner Stadtbezirke
 ```{python Districts}
 districts_data = load_geojson("data/districts.geojson")
+districts_population = pd.read_csv("data/districts_population.csv")
+districts_population[["bevölkerung"]] = districts_population[["bevölkerung"]].replace({"[, .]": ""}, regex=True).astype(int)
+
 districts_gdf = convert_to_geodataframe(districts_data)
+districts_gdf["sb_nummer"] = districts_gdf["sb_nummer"].astype(int)
+districts_gdf = districts_gdf.merge(districts_population, left_on="sb_nummer", right_on="stadtbezirksnummer")
+
 districts_gdf.plot(column="sb_name", legend=False)
+districts_gdf
 ```
 
 # Nachbarschaftstreffs
@@ -94,10 +105,4 @@ rank_districts(districts_gdf, "data/baustellen_opendata.geojson", column="strass
 # Zuständige Kaminkehrer 
 ```{python}
 rank_districts(districts_gdf, "data/kaminkehrer.geojson", column="kehrbezirk")
-```
-
-```{python}
-data = load_geojson("data/kaminkehrer.geojson")
-gdf = convert_to_geodataframe(data)
-gdf
 ```
