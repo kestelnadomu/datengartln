@@ -1,0 +1,11 @@
+[project]
+name = "datengartln"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "geopandas>=1.0.1",
+    "ipython>=8.18.1",
+    "matplotlib>=3.9.4",
+]
