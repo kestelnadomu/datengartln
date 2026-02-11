@@ -1,0 +1,103 @@
+---
+title: "Munich Rankings"
+format: html
+---
+
+```{python}
+import json
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+def load_geojson(path):
+    """
+    Docstring for load_geojson
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data
+
+def convert_to_geodataframe(data):
+    """
+    Docstring for convert_to_geodataframe
+    """
+    gdf = gpd.GeoDataFrame.from_features(data["features"])
+    return gdf
+
+def point_in_polygon(point, polygon):
+    """
+    Docstring for point_in_polygon
+    """
+    return polygon.contains(point)
+
+def plot_gdfs(gdfs, columns):
+    """
+    Plot multiple GeoDataFrames on the same plot, optionally coloring by a specified column.
+    """
+    fig, ax = plt.subplots(figsize=(10, 10))
+    for gdf, column in zip(gdfs, columns):
+        gdf.plot(ax=ax, column=column, legend=False)
+    plt.show()
+
+def map_polygons_to_points(districts_gdf, points_gdf):
+    """
+    Map each neighbourhood to its corresponding district based on spatial containment.
+    """
+    for _, p in points_gdf.iterrows():
+        for _, district in districts_gdf.iterrows():
+            try:
+                if point_in_polygon(p["geometry"], district["geometry"]):
+                    points_gdf.loc[p.name, "sb_name"] = district["sb_name"]
+                    break
+            except Exception as e:
+                print(f"Error processing point {p.name} and district {district['sb_name']}: {e}")
+    return points_gdf
+
+def rank_districts(districts_gdf, points_path, column="adresse"):
+    """
+    Rank districts based on the number of neighbourhoods they contain.
+    """
+    points_data = load_geojson(points_path)
+    points_gdf = convert_to_geodataframe(points_data)
+    points_gdf = map_polygons_to_points(districts_gdf, points_gdf)
+    plot_gdfs([districts_gdf, points_gdf], columns=["sb_name", column])
+    return points_gdf.groupby("sb_name").size().sort_values(ascending=False)
+```
+
+# Die Münchner Stadtbezirke
+```{python Districts}
+districts_data = load_geojson("data/districts.geojson")
+districts_gdf = convert_to_geodataframe(districts_data)
+districts_gdf.plot(column="sb_name", legend=False)
+```
+
+# Nachbarschaftstreffs
+```{python}
+rank_districts(districts_gdf, "data/neighbourhoods.geojson", column="st2")
+```
+
+# Öffentlichen Toiletten
+```{python}
+rank_districts(districts_gdf, "data/wc_finder_opendata.geojson", column="strasse")
+```
+
+# Märkte
+```{python}
+rank_districts(districts_gdf, "data/markets.geojson", column="adresse")
+```
+
+# Baustellen
+
+```{python}
+rank_districts(districts_gdf, "data/baustellen_opendata.geojson", column="strasse_hausnr")
+```
+
+# Zuständige Kaminkehrer 
+```{python}
+rank_districts(districts_gdf, "data/kaminkehrer.geojson", column="kehrbezirk")
+```
+
+```{python}
+data = load_geojson("data/kaminkehrer.geojson")
+gdf = convert_to_geodataframe(data)
+gdf
+```
